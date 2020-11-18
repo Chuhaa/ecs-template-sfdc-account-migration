@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS ESC_SFDC_TO_DB; 
+
+CREATE TABLE IF NOT EXISTS ESC_SFDC_TO_DB.Account(
+  AccountId VARCHAR(300),
+  Name VARCHAR(300),
+  Type VARCHAR(300),
+  Phone VARCHAR(30),
+  Fax VARCHAR(30),
+  AccountNumber VARCHAR(300),
+  Website VARCHAR(300),
+  Industry VARCHAR(300),
+  Ownership VARCHAR(300),
+  Description VARCHAR(500)
+);
