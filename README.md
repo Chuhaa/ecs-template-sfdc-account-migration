@@ -3,7 +3,7 @@
 
 ## Integration Use Case 
 
-This integration template listens to the updated on Salesforce Accounts and publishes the updated accounts to a database.     
+This integration template helps to migrate Salesforce Accounts to a Database. Initially all the existing accounts will be migrated using a batch job. After that a lisstner listens to the updates on Salesforce Accounts and publishes the updated accounts to the database.      
 
 ![image](docs/images/sfdc-db-acc-mig.png)
 
@@ -94,7 +94,8 @@ DB_PWD=""
 2. Then you can run the integration binary with the following command. 
 `$ java -jar target/bin/sfdcaccmigration.jar`. 
 
-Successful listener startup will print following in the console.
+Initially all the existing accounts will be migrated to database.
+After that successful listener startup will print following in the console.
 ```
 >>>>
 [2020-11-19 01:26:43.322] Success:[/meta/handshake]

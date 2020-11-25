@@ -10,5 +10,6 @@ CREATE TABLE IF NOT EXISTS ESC_SFDC_TO_DB.Account(
   Website VARCHAR(300),
   Industry VARCHAR(300),
   Ownership VARCHAR(300),
-  Description VARCHAR(500)
+  Description VARCHAR(500),
+  PRIMARY KEY (`AccountId`)
 );
