@@ -1,15 +1,10 @@
-[project]
-org-name= "kasthuriraajan"
-version= "0.1.0"
+[package]
+org = "chuhaashanan"
+name = "ecs_template_sfdc_account_migration_to_db"
+version = "0.1.0"
 
 [build-options]
-observability-included=true
+observabilityIncluded = true
 
-[dependencies]
-"ballerinax/sfdc" = "2.1.3"
-
-[platform]
-target = "java11"
-	[[platform.libraries]]
-	path = "./javalibs/mysql-connector-java-8.0.22.jar"
-	modules = ["sfdcaccmigration"]
+[[platform.java11.dependency]]
+path = "./lib/mysql-connector-java-8.0.22.jar"

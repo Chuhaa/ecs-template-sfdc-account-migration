@@ -46,7 +46,7 @@ public function main(){
                 if (batchResultArr is json[]) {
                     foreach var result in batchResultArr {
                         string accountId = result.Id.toString();
-                        log:printInfo("Account ID : " + accountId); 
+                        log:print("Account ID : " + accountId); 
                         migrateAccount(accountId);
                     }
                 } else {
@@ -70,16 +70,16 @@ public function main(){
     topic:config:getAsString("SF_ACCOUNT_TOPIC")
 }
 
-service sfdcAccountListener on sfdcEventListener {
-    resource function onEvent(json acc) {  
+service on sfdcEventListener {
+    remote function onEvent(json acc) {  
         //convert json string to json
         io:StringReader sr = new(acc.toJsonString());
         json|error account = sr.readJson();
         if (account is json) {
-            log:printInfo(account.toJsonString());
+            log:print(account.toJsonString());
             //Get the account id from the account
             string accountId = account.sobject.Id.toString();
-            log:printInfo("Account ID : " + accountId);
+            log:print("Account ID : " + accountId);
             migrateAccount(accountId);
         }
     }
@@ -88,8 +88,6 @@ service sfdcAccountListener on sfdcEventListener {
 function migrateAccount(string accountId) {
     json|sfdc:Error accountInfo = baseClient->getAccountById(accountId);
     if (accountInfo is json) {
-        // Log account information. 
-        log:printInfo(accountInfo);
         // Add the current account to a DB. 
         addAccountToDB(<@untainted>accountInfo);
     }
@@ -107,7 +105,7 @@ function addAccountToDB(json account) {
     string accOwnership = account.Ownership.toString();
     string description = account.Description.toString();
     
-    log:printInfo(id + ":" + name + ":" + accType + ":" + description );
+    log:print(id + ":" + name + ":" + accType + ":" + description );
     // The SQL query to insert an account record to the DB. 
     sql:ParameterizedQuery insertQuery =
             `INSERT INTO ESC_SFDC_TO_DB.Account (AccountId, Name, Type, Phone, Fax, AccountNumber, Website, Industry, Ownership, Description) 
