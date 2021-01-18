@@ -92,7 +92,7 @@ DB_PWD=""
 `$ ballerina build -a`. 
 
 2. Then you can run the integration binary with the following command. 
-`$ java -jar target/bin/sfdcaccmigration.jar`. 
+`$ ballerina run ./target/bin/ecs_template_sfdc_account_migration_to_db.jar`. 
 
 Initially all the existing accounts will be migrated to database.
 After that successful listener startup will print following in the console.
