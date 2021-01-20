@@ -89,7 +89,7 @@ DB_PWD=""
 ## Running the Template
 
 1. First you need to build the integration template and create the executable binary. Run the following command from the root directory of the integration template. 
-`$ ballerina build -a`. 
+`$ ballerina build`. 
 
 2. Then you can run the integration binary with the following command. 
 `$ ballerina run ./target/bin/ecs_template_sfdc_account_migration_to_db.jar`. 
