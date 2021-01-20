@@ -31,15 +31,11 @@ mysql:Client mysqlClient =  check new (user = config:getAsString("DB_USER"),
 
 public function main(){
     string queryStr = "SELECT Id FROM Account";
-    //create bulk job
     error|sfdc:BulkJob queryJob = baseClient->creatJob("query", "Account", "JSON");
     if (queryJob is sfdc:BulkJob) {
-        //create batch
         error|sfdc:BatchInfo batch = queryJob->addBatch(queryStr);
         if (batch is sfdc:BatchInfo) {
-            io:println(batch);
             string batchId = batch.id;
-            //get batch result
             var batchResult = queryJob->getBatchResult(batchId);
             if (batchResult is json) {
                 json[]|error batchResultArr = <json[]>batchResult;
@@ -69,15 +65,12 @@ public function main(){
 @sfdc:ServiceConfig {
     topic:config:getAsString("SF_ACCOUNT_TOPIC")
 }
-
 service on sfdcEventListener {
     remote function onEvent(json acc) {  
-        //convert json string to json
         io:StringReader sr = new(acc.toJsonString());
         json|error account = sr.readJson();
         if (account is json) {
             log:print(account.toJsonString());
-            //Get the account id from the account
             string accountId = account.sobject.Id.toString();
             log:print("Account ID : " + accountId);
             migrateAccount(accountId);
@@ -88,7 +81,6 @@ service on sfdcEventListener {
 function migrateAccount(string accountId) {
     json|sfdc:Error accountInfo = baseClient->getAccountById(accountId);
     if (accountInfo is json) {
-        // Add the current account to a DB. 
         addAccountToDB(<@untainted>accountInfo);
     }
 }
@@ -106,31 +98,10 @@ function addAccountToDB(json account) {
     string description = account.Description.toString();
     
     log:print(id + ":" + name + ":" + accType + ":" + description );
-    // The SQL query to insert an account record to the DB. 
     sql:ParameterizedQuery insertQuery =
             `INSERT INTO ESC_SFDC_TO_DB.Account (AccountId, Name, Type, Phone, Fax, AccountNumber, Website, Industry, Ownership, Description) 
-            VALUES (${id}, ${name}, ${accType}, ${phone}, ${fax}, ${accountNumber}, ${website}, ${industry}, ${accOwnership}, ${description})`;
-    // Invoking the MySQL Client to execute the insert operation. 
+            VALUES (${id}, ${name}, ${accType}, ${phone}, ${fax}, ${accountNumber}, ${website}, ${industry}, ${accOwnership}, ${description})
+            ON DUPLICATE KEY UPDATE AccountId = ${id}, Name = ${name}, Type = ${accType}, Phone = ${phone}, Fax = ${fax}, AccountNumber = ${accountNumber},
+            Website =${website}, Industry = ${industry}, Ownership = ${accOwnership}, Description = ${description}`;
     sql:ExecutionResult|sql:Error? result  = mysqlClient->execute(insertQuery);
-    if result is sql:Error{
-        //if the entry exists in db 
-        if result is sql:DatabaseError{
-            sql:DatabaseErrorDetail errorDetails = result.detail();
-            if(1062==errorDetails.errorCode){
-                // The SQL query to update an account record to the DB. 
-                sql:ParameterizedQuery updateQuery =
-                `UPDATE ESC_SFDC_TO_DB.Account SET  Name=${name}, Type=${accType} ,Phone=${phone}, Fax=${fax}, AccountNumber=${accountNumber}, Website=${website}, Industry=${industry}, Ownership=${accOwnership}, Description=${description} WHERE AccountId=${id}`;
-                sql:ExecutionResult|sql:Error? updateResult  = mysqlClient->execute(updateQuery);
-                if updateResult is sql:Error{
-                    log:printError(updateResult.message());
-                }
-            }
-            else{
-                log:printError(result.message());
-            }
-        }
-        else{
-            log:printError(result.message());
-        } 
-    }    
 }
